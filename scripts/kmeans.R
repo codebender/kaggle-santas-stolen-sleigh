@@ -36,7 +36,7 @@ weighted_trip_length <- function(trip_gifts) {
 }
 
 gifts <- read.csv("../input/gifts.csv")
-system.time(model <- kmeans(gifts[,2:3],5000,iter.max =10000, algorithm="MacQueen"))
+system.time(model <- kmeans(gifts[,2:3],5000,iter.max =10000))
 gifts$TripId <- model$cluster
 submission <- gifts[order(gifts$Weight, decreasing=TRUE),c(1,5)]
 
