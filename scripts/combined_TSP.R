@@ -6,7 +6,7 @@ library (data.table)
 library(readr)
 library(fpc)
 
-set.seed(1337)
+set.seed(4200)
 
 AVG_EARTH_RADIUS = 6371
 
@@ -42,7 +42,7 @@ weighted_trip_length <- function(trip_gifts) {
   x
 }
 
-clstrs = 5280
+clstrs = 4000
 gifts <- read.csv("../input/gifts.csv")
 
 model <- kmeansCBI(gifts[, 2:3], k=clstrs, iter.max = 10000,
@@ -51,6 +51,9 @@ model <- kmeansCBI(gifts[, 2:3], k=clstrs, iter.max = 10000,
 delivery <- data.frame(GiftId = gifts$GiftId, TripId = model$partition - 1)
 
 weightedDelivery <- merge(delivery, gifts)
+
+tripSums <- aggregate(Weight~TripId, data=weightedDelivery, FUN=sum)
+nrow(tripSums[tripSums$Weight > 990, ])
 
 weightSubmission <- weightedDelivery[with(weightedDelivery, order(-Weight)), c('GiftId', 'TripId')]
 orderedSubmission <- delivery
@@ -135,4 +138,4 @@ for (i in unique(TSPsubmission$TripId)) {
 }
 print(submissionDist)
 
-write.csv(submission,file="../submissions/combined_models.csv",row.names=FALSE)
+write.csv(submission,file="../submissions/combined_models_4000.csv",row.names=FALSE)
