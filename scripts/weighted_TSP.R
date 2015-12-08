@@ -43,7 +43,7 @@ weighted_trip_length <- function(trip_gifts) {
 
 gifts <- read.csv("../input/gifts.csv")
 
-clstrs = 3500
+clstrs = 3700
 set.seed(2222)
 
 model <- kmeansCBI(gifts[, 2:3], k=clstrs, iter.max = 10000,
@@ -61,6 +61,7 @@ orderedSubmission <- delivery
 
 TSPsubmission <- data.frame(GiftId=integer(0), TripId=integer(0))
 TSPSecondSubmission <- data.frame(GiftId=integer(0), TripId=integer(0))
+TSPThirdSubmission <- data.frame(GiftId=integer(0), TripId=integer(0))
 
 for (i in unique(weightSubmission$TripId)) {
   tripGiftsByWeight <- gifts[delivery$TripId==i, ]
@@ -71,6 +72,7 @@ for (i in unique(weightSubmission$TripId)) {
                           TripId = i)
     TSPsubmission <- rbind(TSPsubmission, TSPTrip)
     TSPSecondSubmission <- rbind(TSPSecondSubmission, TSPTrip)
+    TSPThirdSubmission <- rbind(TSPThirdSubmission, TSPTrip)
     next
   }
   
@@ -84,15 +86,16 @@ for (i in unique(weightSubmission$TripId)) {
   tour_atsp_second <- solve_TSP(atsp, method="nn", control = list(start = 2))
   TSPTripSecond <- data.frame(GiftId=as.integer(labels(tour_atsp_second)), TripId=i)
   TSPSecondSubmission <- rbind(TSPSecondSubmission, TSPTripSecond)
+  
+  tour_atsp_third <- solve_TSP(atsp, method="nn", control = list(start = 3))
+  TSPTripThird <- data.frame(GiftId=as.integer(labels(tour_atsp_third)), TripId=i)
+  TSPThirdSubmission <- rbind(TSPThirdSubmission, TSPTripThird)
 }
 
 TSPDistances <- data.frame()
 TSPDist=0.0
 for (i in unique(TSPsubmission$TripId)) {
   weightedDist = weighted_trip_length(TSPsubmission$GiftId[TSPsubmission$TripId==i])
-  
-  #tripWeight <- sum(gifts$Weight[TSPsubmission$GiftId[TSPsubmission$TripId==i]])
-  #efficency <- tripWeight/weightedDist * 1000
   
   TSPDistances <- rbind(TSPDistances, data.frame(TripID= i,WD=weightedDist))
   TSPDist = TSPDist + weightedDist
@@ -104,13 +107,20 @@ TSPSecondDist=0.0
 for (i in unique(TSPSecondSubmission$TripId)) {
   weightedDist = weighted_trip_length(TSPSecondSubmission$GiftId[TSPSecondSubmission$TripId==i])
   
-  #tripWeight <- sum(gifts$Weight[TSPsubmission$GiftId[TSPsubmission$TripId==i]])
-  #efficency <- tripWeight/weightedDist * 1000
-  
   TSPSecondDistances <- rbind(TSPSecondDistances, data.frame(TripID= i,WD=weightedDist))
   TSPSecondDist = TSPSecondDist + weightedDist
 }
 print(TSPSecondDist)
+
+TSPThirdDistances <- data.frame()
+TSPThirdDist=0.0
+for (i in unique(TSPSecondSubmission$TripId)) {
+  weightedDist = weighted_trip_length(TSPThirdSubmission$GiftId[TSPThirdSubmission$TripId==i])
+  
+  TSPThirdDistances <- rbind(TSPThirdDistances, data.frame(TripID= i,WD=weightedDist))
+  TSPThirdDist = TSPThirdDist + weightedDist
+}
+print(TSPThirdDist)
 
 
 weightedDistances <- data.frame()
@@ -136,11 +146,16 @@ allDistances <- merge(orderDistances, TSPDistances, by=c('TripID'), all = TRUE,
 allDistances <- merge(allDistances, TSPSecondDistances, by=c('TripID'),
                       all = TRUE)
 names(allDistances)[4] <- 'WD.TSPSecond'
+allDistances <- merge(allDistances, TSPThirdDistances, by=c('TripID'),
+                      all = TRUE)
+names(allDistances)[5] <- 'WD.TSPThird'
 allDistances <- merge(allDistances, weightedDistances, by=c('TripID'),
                       all = TRUE)
-names(allDistances)[5] <- 'WD.weighted'
+names(allDistances)[6] <- 'WD.weighted'
 
-allDistances$Min <- with(allDistances, pmin(WD.ordered, WD.TSP, WD.TSPSecond, WD.weighted))
+allDistances$Min <- with(allDistances, pmin(WD.ordered, WD.TSP, WD.TSPSecond,
+                                            WD.TSPThird,
+                                            WD.weighted))
 
 
 submission <- data.frame()
@@ -154,6 +169,10 @@ for (i in 1:nrow(allDistances)) {
   else if(row$Min == row$WD.TSPSecond) {
     submission <- rbind(submission, 
                         TSPSecondSubmission[TSPSecondSubmission$TripId == row$TripID, ])
+  }
+  else if(row$Min == row$WD.TSPThird) {
+    submission <- rbind(submission, 
+                        TSPThirdSubmission[TSPThirdSubmission$TripId == row$TripID, ])
   }
   else if(row$Min == row$WD.weighted) {
     submission <- rbind(submission,
@@ -174,4 +193,4 @@ for (i in unique(TSPsubmission$TripId)) {
 }
 print(submissionDist)
 
-write.csv(submission,file="../submissions/TSP_twice_3500.csv",row.names=FALSE)
+write.csv(submission,file="../submissions/TSP_thrice_3700.csv",row.names=FALSE)
