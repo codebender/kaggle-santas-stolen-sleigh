@@ -42,7 +42,7 @@ weighted_trip_length <- function(trip_gifts) {
 gifts <- read.csv("../input/gifts.csv")
 goodClusters <- read.csv("../input/good_clusters.csv")
 
-numberOfTours = 20
+numberOfTours = 5
 AllTSPSubmissions <- c()
 for(i in 1:numberOfTours) {
   AllTSPSubmissions[[i]] <- data.frame(GiftId=integer(0), TripId=integer(0))
@@ -105,9 +105,9 @@ for(tourNum in 2:numberOfTours) {
 allDistances$Min <- with(allDistances,
                          pmin(WD.Original,
                               WD.1, WD.2, WD.3, WD.4, WD.5,
-                              WD.6, WD.7, WD.8, WD.9, WD.10,
-                              WD.11, WD.12, WD.13, WD.14, WD.15,
-                              WD.16, WD.17, WD.18, WD.19, WD.20,
+                              #WD.6, WD.7, WD.8, WD.9, WD.10,
+                              #WD.11, WD.12, WD.13, WD.14, WD.15,
+                              #WD.16, WD.17, WD.18, WD.19, WD.20,
                               na.rm=TRUE))
 
 
