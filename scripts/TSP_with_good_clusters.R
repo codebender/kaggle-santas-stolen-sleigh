@@ -42,7 +42,8 @@ weighted_trip_length <- function(trip_gifts) {
 gifts <- read.csv("../input/gifts.csv")
 goodClusters <- read.csv("../input/good_clusters.csv")
 
-numberOfTours = 5
+tspTypes = c('nn', 'nn')
+numberOfTours = length(tspTypes)
 AllTSPSubmissions <- c()
 for(i in 1:numberOfTours) {
   AllTSPSubmissions[[i]] <- data.frame(GiftId=integer(0), TripId=integer(0))
@@ -54,7 +55,7 @@ for (i in unique(goodClusters$TripId)) {
   distMatrix <- dist(clusterTrip[, c('Longitude', 'Latitude')])
   atsp <- TSP(distMatrix, labels=clusterTrip$GiftId)
 
-  for(tourNum in 1:numberOfTours) {
+  for(tourNum in 1:length(tspTypes)) {
 
     # low gift trips
     if(nrow(clusterTrip) <= 2 &&
@@ -64,7 +65,13 @@ for (i in unique(goodClusters$TripId)) {
       AllTSPSubmissions[[tourNum]] <- rbind(AllTSPSubmissions[[tourNum]], TSPTour)
     }
     else if(nrow(clusterTrip) >= tourNum) {
-      tour_atsp <- solve_TSP(atsp, method="nn", control = list(start = tourNum))
+      if(tourNum == 1) {
+        tour_atsp <- solve_TSP(atsp, method=tspTypes[tourNum], control = c(start = 1))
+      }
+      else if(tourNum == 2) {
+        tour_atsp <- solve_TSP(atsp, method=tspTypes[tourNum], two_opt=TRUE, control = c(start = 1))
+      }
+
       TSPTour <- data.frame(GiftId=as.integer(labels(tour_atsp)), TripId=i)
       AllTSPSubmissions[[tourNum]] <- rbind(AllTSPSubmissions[[tourNum]], TSPTour)
     }
@@ -104,7 +111,7 @@ for(tourNum in 2:numberOfTours) {
 
 allDistances$Min <- with(allDistances,
                          pmin(WD.Original,
-                              WD.1, WD.2, WD.3, WD.4, WD.5,
+                              WD.1, WD.2, #WD.3, WD.4, WD.5,
                               #WD.6, WD.7, WD.8, WD.9, WD.10,
                               #WD.11, WD.12, WD.13, WD.14, WD.15,
                               #WD.16, WD.17, WD.18, WD.19, WD.20,
@@ -139,4 +146,4 @@ for (i in unique(goodClusters$TripId)) {
 }
 print(submissionDist)
 
-write.csv(submission,file="../submissions/good_clusters_with_TSP.csv",row.names=FALSE)
+write.csv(submission,file="../submissions/good_clusters_with_2_TSPs.csv",row.names=FALSE)
