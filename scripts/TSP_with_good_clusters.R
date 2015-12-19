@@ -146,10 +146,10 @@ for (i in unique(goodClusters$TripId)) {
 }
 print(submissionDist)
 
-currentScore = 12510665082
+currentScore = 12506423403
 
 if(submissionDist < currentScore) {
   print('IMPROVEMENT')
-  write.csv(submission,file="../submissions/good_clusters_with_2_TSPs.csv",row.names=FALSE)
+  write.csv(submission,file="../submissions/high_score.csv",row.names=FALSE)
 }
 
