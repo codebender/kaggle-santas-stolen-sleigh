@@ -107,7 +107,7 @@ for n in range(2):
             previous_trip, b = prev_path_opt(previous_trip, b)
             previous_trip = bb_sort(previous_trip)
             #output
-            print(submission.TripId[s_-1], b_)
+            print(submission.TripId[s_-1], b_, bm)
             if s_ > 1:
                 b_ = path_opt_test(previous_trip)[0]
                 bm += b_
@@ -141,7 +141,7 @@ for n in range(2):
     ou_.close()
     c.close()
 
-    benchmark = 12476575039.3
+    benchmark = 12469095701
     if bm < benchmark:
         print(n, "Improvement", bm, bm - benchmark, benchmark)
     else:

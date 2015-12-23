@@ -119,6 +119,8 @@ allDistances$Min <- with(allDistances,
 
 allDistances$TSPDiff = allDistances$WD.Original - allDistances$Min
 
+print(paste('TSP Improvement:', sum(allDistances$TSPDiff)))
+
 submission <- data.frame()
 for (i in 1:nrow(allDistances)) {
   row <- allDistances[i, ]
@@ -147,7 +149,7 @@ for (i in unique(goodClusters$TripId)) {
 }
 print(submissionDist)
 
-currentScore = 12469082180
+currentScore = 12469078036
 
 if(submissionDist < currentScore) {
   print('IMPROVEMENT')
