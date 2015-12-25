@@ -149,7 +149,7 @@ for (i in unique(goodClusters$TripId)) {
 }
 print(submissionDist)
 
-currentScore = 12469078036
+currentScore = 12454778414
 
 if(submissionDist < currentScore) {
   print('IMPROVEMENT')
