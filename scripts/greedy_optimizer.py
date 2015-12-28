@@ -80,14 +80,14 @@ def path_opt_test(llo):
     f_ += d_ * 10 #sleigh weight for whole trip
     return [f_,d_,we_]
 
-for n in range(2):
+for n in range(10):
     gifts = pd.read_csv("../input/gifts.csv").fillna(" ")
-    subvers = pd.read_csv("../submissions/submission_v" + str(n) +".csv").fillna(" ")
+    subvers = pd.read_csv("../submissions/iteration_" + str(n) +".csv").fillna(" ")
     c = sqlite3.connect(":memory:")
     gifts.to_sql("gifts",c)
     subvers.to_sql("vers",c)
 
-    ou_ = open("../submissions/submission_v" + str(n+1) + ".csv","w")
+    ou_ = open("../submissions/iteration_" + str(n+1) + ".csv","w")
     ou_.write("TripId,GiftId\n")
     bm = 0.0
     b_ = 0.0
