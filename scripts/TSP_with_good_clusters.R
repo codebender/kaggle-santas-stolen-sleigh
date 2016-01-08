@@ -40,7 +40,7 @@ weighted_trip_length <- function(trip_gifts) {
 
 
 gifts <- read.csv("../input/gifts.csv")
-goodClusters <- read.csv("../input/try_again.csv")
+goodClusters <- read.csv("../submissions/clusters_0.csv")
 
 tspTypes = c('nn', 'nn')
 numberOfTours = length(tspTypes)
@@ -149,10 +149,13 @@ for (i in unique(goodClusters$TripId)) {
 }
 print(submissionDist)
 
-currentScore = 12451848058
+currentScore = 12435832119
 
 if(submissionDist < currentScore) {
   print('IMPROVEMENT')
   write.csv(submission,file="../submissions/high_score.csv",row.names=FALSE)
+}else {
+  print('Keep trying')
+  print(paste('Difference:', submissionDist - currentScore))
 }
 
